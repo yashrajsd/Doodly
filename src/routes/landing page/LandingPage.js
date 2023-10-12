@@ -6,12 +6,12 @@ import Section3 from './sections/Section3'
 import ScrollingText from '../../components/ScrollingText'
 import Section4 from './sections/Section4'
 
-const LandingPage = () => {
+const LandingPage = ({socket,setFinding}) => {
   return (
     <div className=''>
         <Navbar/>
     <div className='relative'>
-      <Section1/>
+      <Section1 socket={socket} setFinding={setFinding}/>
       </div>
       <Section2/>
       <ScrollingText/>

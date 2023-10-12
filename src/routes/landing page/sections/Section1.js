@@ -1,27 +1,65 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import sec1img from '../../../utils/sec1img.jpg'
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import Fade from 'react-reveal'
 import VideoPlayer from '../../../components/VideoPlayer';
 import videobg from '../../../utils/landingvideo1.mp4'
 import ShuffleIcon from '@mui/icons-material/Shuffle';
+import { useNavigate } from 'react-router-dom';
 
-const Section1 = () => {
-    const BoldFont = {
-        fontFamily: 'Poppins, sans-serif',
-        fontWeight: '600', // bold (600) weight
+const BoldFont = {
+  fontFamily: 'Poppins, sans-serif',
+  fontWeight: '600', // bold (600) weight
+};
+
+const extraBolt = {
+fontFamily: 'Poppins, sans-serif',
+fontWeight: '800'
+}
+
+const MediumPoppins ={
+  fontFamily:'Poppins, sans-serif',
+  fontWeight:'600'
+}
+
+const transparentInputStyle = {
+background: 'transparent',
+color: 'white',
+outline:'none'
+};
+
+const Section1 = ({socket,setFinding}) => {
+  const navigate = useNavigate()
+  const [roomID,setRoomID] = useState('')
+
+    useEffect(()=>{
+      socket.on('roomError',()=>{
+        alert('Error with the roomID')
+      })
+
+      socket.on('userJoined',(roomId)=>{
+        navigate(`/game/${roomId}`)
+      })
+
+      return () => {
+        socket.off('roomError');
+        socket.off('userJoined')
+      };
+    },[socket])
+
+    const joinRoom = () => {
+      if(roomID){
+        socket.emit('joinRoom', roomID,'yash');
+        socket.off('joinRoom')
+      }else{
+        alert('Enter Room ID')
+      }
     };
 
-    const MediumPoppins ={
-        fontFamily:'Poppins, sans-serif',
-        fontWeight:'600'
+    const findRoom = ()=>{
+      setFinding(true)
+      navigate('/finding')
     }
-
-    const transparentInputStyle = {
-      background: 'transparent',
-      color: 'white',
-      outline:'none'
-    };
 
   return (
     <div className='flex flex-col justify-center  items-center'>
@@ -38,12 +76,13 @@ const Section1 = () => {
             placeholder='ENTER ROOM CODE'
             style={transparentInputStyle}
             className='w-[70%]'
+            onChange={(e)=>{setRoomID(e.target.value)}}
           />
-          <button className='w-[30%] text-white bg-[#6C27FF] rounded-lg'>
+          <button className='w-[30%] text-white bg-[#6C27FF] rounded-lg hover:scale-110 duration-500' onClick={joinRoom}>
             JOIN GAME
           </button>
         </div>
-        <button className='min-h-[5rem] flex justify-center items-center gap-[0.5rem] bg-[#6C27FF] text-white min-w-[8rem] rounded-lg' style={{...BoldFont}}>PLAY <ShuffleIcon/></button>
+        <button className='min-h-[5rem] flex justify-center items-center text-[1.2rem] gap-[0.5rem] duration-500 hover:scale-110 bg-[#6C27FF] text-white min-w-[8rem] rounded-lg' style={{...extraBolt}} onClick={findRoom}>PLAY <ShuffleIcon/></button>
             </span>
         </Fade>
         <Fade bottom>
